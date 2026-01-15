@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>访客通行凭证</title>
+  <style>
+    /* 苹果 17 Pro Max 基准尺寸适配 */
+    :root {
+      --screen-width: 480px;
+      --screen-height: 1029px;
+      --status-bar-height: 0; /* 移除状态栏高度 */
+      --safe-area-bottom: 34px;
+      /* 新增：页面左右收窄的内边距 */
+      --page-padding: 20px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      width: var(--screen-width);
+      height: var(--screen-height);
+      margin: 0 auto;
+      background-color: #f5f5f7;
+      position: relative;
+      overflow-x: hidden;
+      /* 核心：收窄左右边框，通过内边距实现 */
+      padding: 0 var(--page-padding);
+    }
+
+    /* 移除状态栏、导航栏相关样式 */
+
+    /* 头部信息区 - 调整顶部间距 */
+    .header {
+      background-color: #1677ff;
+      color: #fff;
+      padding: 20px 16px;
+      /* 新增：适配页面收窄后的宽度 */
+      width: calc(100% - 2 * var(--page-padding));
+      margin: 0 auto;
+      border-radius: 8px 8px 0 0;
+      margin-top: 20px;
+    }
+
+    .header .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .header .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .header .user-name {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .header .tabs {
+      display: flex;
+      background-color: rgba(255,255,255,0.15);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .header .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .header .tab.active {
+      background-color: #fff;
+      color: #1677ff;
+      font-weight: 500;
+    }
+
+    /* 内容区 - 适配左右收窄 */
+    .content {
+      padding: 16px 0;
+      width: calc(100% - 2 * var(--page-padding));
+      margin: 0 auto;
+    }
+
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .visitor-card {
+      display: flex;
+      gap: 12px;
+    }
+
+    .visitor-card .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      background: url('1.jpg') center/cover;
+    }
+
+    .visitor-card .info {
+      flex: 1;
+    }
+
+    .visitor-card .name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1677ff;
+      margin-bottom: 8px;
+    }
+
+    .visitor-card .text {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .visitor-card .time {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .id-card {
+      width: 100%;
+      height: 0;
+      padding-top: 56.25%;
+      background: url('3.jpg') center/cover no-repeat;
+      border-radius: 8px;
+      margin: 12px 0;
+      background-color: #f5f5f5;
+      overflow: hidden;
+    }
+
+    .building-selector {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .building-selector .btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .building-selector .btn.active {
+      background-color: #07c160;
+      color: #fff;
+      border-color: #07c160;
+    }
+
+    .approver {
+      margin-top: 16px;
+    }
+
+    .approver .title {
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .approver .text {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <!-- 移除状态栏、导航栏所有代码 -->
+
+  <!-- 头部信息 -->
+  <div class="header">
+    <div class="user-info">
+      <div class="avatar">👤</div>
+      <div class="user-name">王* 181****5181</div>
+    </div>
+    <div class="tabs">
+      <div class="tab active">拜访申请</div>
+      <div class="tab">完善信息</div>
+    </div>
+  </div>
+
+  <!-- 内容区 -->
+  <div class="content">
+    <div class="card">
+      <div class="visitor-card">
+        <div class="avatar"></div>
+        <div class="info">
+          <div class="name">王* (临时访客)</div>
+          <div class="text">您好，您的报备信息已审核通过！</div>
+          <div class="time">2026-01-16 00:53:29</div> <!-- 移除动态时间脚本，保留静态时间 -->
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="id-card"></div>
+      <div class="building-selector">
+        <div class="btn active">主楼</div>
+        <div class="btn">服务楼</div>
+        <div class="btn">数据楼</div>
+        <div class="btn">机房楼</div>
+      </div>
+      <div class="approver">
+        <div class="title">报备信息审核人员</div>
+        <div class="text">政企客户部/客户运营室<br>徐佳　13909280211</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 移除动态时间更新脚本 -->
+</body>
+</html>
