@@ -249,21 +249,24 @@
 
             <!-- 直接内嵌上传的图片，使用图片的原始URL -->
             <img
-                src="./background.jpg"
+                src="./compressed_background.jpg"
+                loading="lazy"
                 alt="访客审核通过页面"
                 class="embedded-image"
                 onload="hideLoading()"
                 onerror="handleImageError(this)"
             >
             <!-- 覆盖在上方的人像图片 -->
-            <img src="./1.jpg"
+            <img src="./compressed_1.jpg"
+                 loading="lazy"
                  alt="人像图片"
                  class="overlay-portrait"
                  onload="imageLoaded(this)"
                  onerror="handleImageError(this)">
 
             <!-- 身份信息图片 -->
-            <img src="./3.jpg"
+            <img src="./compressed_3.jpg"
+                 loading="lazy" 
                  alt="身份信息"
                  class="card-portrait"
                  onload="imageLoaded(this)"
