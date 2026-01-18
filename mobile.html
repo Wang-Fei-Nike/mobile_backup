@@ -1,238 +1,463 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>访客通行凭证</title>
-  <style>
-    /* 苹果 17 Pro Max 基准尺寸适配 */
-    :root {
-      --screen-width: 480px;
-      --screen-height: 1029px;
-      --status-bar-height: 0; /* 移除状态栏高度 */
-      --safe-area-bottom: 34px;
-      /* 新增：页面左右收窄的内边距 */
-      --page-padding: 20px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>访客审核详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* iPhone 14 Pro Max 安全区域适配 */
+        @supports (padding: max(0px)) {
+            body {
+                padding-top: max(env(safe-area-inset-top), 20px);
+                padding-bottom: max(env(safe-area-inset-bottom), 20px);
+                padding-left: max(env(safe-area-inset-left), 20px);
+                padding-right: max(env(safe-area-inset-right), 20px);
+            }
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 428px; /* iPhone 14 Pro Max 实际宽度 */
+            margin: 0 auto;
+            overflow: hidden;
+            background-color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 16px;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .embedded-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* iPhone 14 Pro Max 动态岛区域避让 */
+        @media screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
+            body {
+                padding-top: max(env(safe-area-inset-top), 47px);
+            }
+        }
+
+        /* 覆盖在上方的人像图片 - 针对iPhone 14 Pro Max优化 */
+        .overlay-portrait {
+            position: absolute;
+            width: 33.74%;
+            height: auto;
+            aspect-ratio: 115/130;
+            border: 2.5px solid white;
+            object-fit: cover;
+            border-radius: 2px;
+            top: 24.53%;
+            left: 8.63%;
+            z-index: 2;
+        }
+
+    .card-portrait {
+        position: absolute;
+        width: 80.77%;
+        height: auto;
+        aspect-ratio: 300/165;
+        border: 2.5px solid white;
+        object-fit: cover;
+        border-radius: 2px;
+        top: 49.53%;
+        left: 8.63%;
+        z-index: 2;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+        /* 实时时间显示 - iPhone 14 Pro Max 优化定位 */
+        .time-display {
+            position: absolute;
+            top: 40.28%;
+            right: 13.79%;
+            color: #232324;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', 'Menlo', monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            z-index: 3;
+            background: none;
+            letter-spacing: -0.2px;
+            line-height: 3.2;
+        }
 
-    body {
-      width: var(--screen-width);
-      height: var(--screen-height);
-      margin: 0 auto;
-      background-color: #f5f5f7;
-      position: relative;
-      overflow-x: hidden;
-      /* 核心：收窄左右边框，通过内边距实现 */
-      padding: 0 var(--page-padding);
-    }
+        /* iPhone 14 Pro Max 特定屏幕尺寸优化 */
+        @media only screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
+            .container {
+                max-width: 390px; /* 考虑圆角和动态岛后的可用宽度 */
+                border-radius: 20px;
+            }
 
-    /* 移除状态栏、导航栏相关样式 */
+            .time-display {
+                font-size: 12px;
+                right: 13.5%;
+                top: 68.1%;
+            }
 
-    /* 头部信息区 - 调整顶部间距 */
-    .header {
-      background-color: #1677ff;
-      color: #fff;
-      padding: 20px 16px;
-      /* 新增：适配页面收窄后的宽度 */
-      width: calc(100% - 2 * var(--page-padding));
-      margin: 0 auto;
-      border-radius: 8px 8px 0 0;
-      margin-top: 20px;
-    }
+            .overlay-portrait {
+                border-width: 2px;
+                left: 12%;
+            }
 
-    .header .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+            .card-portrait {
+                border-width: 2px;
+                left: 12%;
+            }
+        }
 
-    .header .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background-color: rgba(255,255,255,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
+        /* 更小的屏幕适配 */
+        @media (max-width: 375px) {
+            .container {
+                max-width: 355px;
+                border-radius: 12px;
+            }
 
-    .header .user-name {
-      font-size: 16px;
-      font-weight: 500;
-    }
+            .time-display {
+                font-size: 11px;
+                right: 13%;
+            }
 
-    .header .tabs {
-      display: flex;
-      background-color: rgba(255,255,255,0.15);
-      border-radius: 4px;
-      overflow: hidden;
-    }
+            .overlay-portrait {
+                width: 27.5%;
+                left: 12%;
+            }
 
-    .header .tab {
-      flex: 1;
-      text-align: center;
-      padding: 8px 0;
-      font-size: 15px;
-      cursor: pointer;
-    }
+            .card-portrait {
+                width: 70.5%;
+                left: 12%;
+            }
+        }
 
-    .header .tab.active {
-      background-color: #fff;
-      color: #1677ff;
-      font-weight: 500;
-    }
+        /* 横屏模式适配 */
+        @media (orientation: landscape) {
+            .container {
+                max-width: 85vh;
+                max-height: 85vw;
+            }
 
-    /* 内容区 - 适配左右收窄 */
-    .content {
-      padding: 16px 0;
-      width: calc(100% - 2 * var(--page-padding));
-      margin: 0 auto;
-    }
+            body {
+                padding: 10px;
+                justify-content: flex-start;
+            }
 
-    .card {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+            .time-display {
+                font-size: 11px;
+                top: 68%;
+                right: 13%;
+            }
+        }
 
-    .visitor-card {
-      display: flex;
-      gap: 12px;
-    }
+        /* 防止图片被拖动和选中 */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
 
-    .visitor-card .avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 8px;
-      background: url('1.jpg') center/cover;
-    }
+        /* 加载状态 */
+        .loading-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            z-index: 1;
+        }
 
-    .visitor-card .info {
-      flex: 1;
-    }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
 
-    .visitor-card .name {
-      font-size: 18px;
-      font-weight: 600;
-      color: #1677ff;
-      margin-bottom: 8px;
-    }
+        /* 暗色模式适配 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+            }
 
-    .visitor-card .text {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 12px;
-    }
+            .container {
+                background-color: #1e1e1e;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            }
 
-    .visitor-card .time {
-      font-size: 13px;
-      color: #999;
-    }
+            .time-display {
+                color: #e0e0e0;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            }
+        }
 
-    .id-card {
-      width: 100%;
-      height: 0;
-      padding-top: 56.25%;
-      background: url('3.jpg') center/cover no-repeat;
-      border-radius: 8px;
-      margin: 12px 0;
-      background-color: #f5f5f5;
-      overflow: hidden;
-    }
+        /* 高刷新率屏幕优化 */
+        @media (prefers-reduced-motion: no-preference) {
+            .overlay-portrait, .card-portrait {
+                transition: opacity 0.2s ease;
+            }
+        }
 
-    .building-selector {
-      display: flex;
-      gap: 8px;
-      margin: 16px 0;
-    }
-
-    .building-selector .btn {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      text-align: center;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .building-selector .btn.active {
-      background-color: #07c160;
-      color: #fff;
-      border-color: #07c160;
-    }
-
-    .approver {
-      margin-top: 16px;
-    }
-
-    .approver .title {
-      font-size: 15px;
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-
-    .approver .text {
-      font-size: 14px;
-      color: #666;
-      line-height: 1.6;
-    }
-  </style>
+        /* 辅助功能优化 */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- 移除状态栏、导航栏所有代码 -->
+    <div class="container">
+        <div class="image-container">
+            <!-- 加载占位符 -->
+            <div class="loading-placeholder" id="loadingPlaceholder"></div>
 
-  <!-- 头部信息 -->
-  <div class="header">
-    <div class="user-info">
-      <div class="avatar">👤</div>
-      <div class="user-name">王* 181****5181</div>
-    </div>
-    <div class="tabs">
-      <div class="tab active">拜访申请</div>
-      <div class="tab">完善信息</div>
-    </div>
-  </div>
+            <!-- 直接内嵌上传的图片，使用图片的原始URL -->
+            <img
+                src="./background.jpg"
+                alt="访客审核通过页面"
+                class="embedded-image"
+                onload="hideLoading()"
+                onerror="handleImageError(this)"
+            >
+            <!-- 覆盖在上方的人像图片 -->
+            <img src="./1.jpg"
+                 alt="人像图片"
+                 class="overlay-portrait"
+                 onload="imageLoaded(this)"
+                 onerror="handleImageError(this)">
 
-  <!-- 内容区 -->
-  <div class="content">
-    <div class="card">
-      <div class="visitor-card">
-        <div class="avatar"></div>
-        <div class="info">
-          <div class="name">王* (临时访客)</div>
-          <div class="text">您好，您的报备信息已审核通过！</div>
-          <div class="time">2026-01-16 00:53:29</div> <!-- 移除动态时间脚本，保留静态时间 -->
+            <!-- 身份信息图片 -->
+            <img src="./3.jpg"
+                 alt="身份信息"
+                 class="card-portrait"
+                 onload="imageLoaded(this)"
+                 onerror="handleImageError(this)">
         </div>
-      </div>
+
+        <!-- 实时时间显示 -->
+        <div class="time-display" id="currentTime"></div>
     </div>
 
-    <div class="card">
-      <div class="id-card"></div>
-      <div class="building-selector">
-        <div class="btn active">主楼</div>
-        <div class="btn">服务楼</div>
-        <div class="btn">数据楼</div>
-        <div class="btn">机房楼</div>
-      </div>
-      <div class="approver">
-        <div class="title">报备信息审核人员</div>
-        <div class="text">政企客户部/客户运营室<br>徐佳　13909280211</div>
-      </div>
-    </div>
-  </div>
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('iPhone 14 Pro Max 适配版本加载完成');
 
-  <!-- 移除动态时间更新脚本 -->
+            // 检测设备类型
+            function detectDevice() {
+                const ua = navigator.userAgent;
+                const isiPhone = /iPhone/.test(ua);
+                const isiOS = /iPad|iPhone|iPod/.test(ua);
+                const screenWidth = window.screen.width;
+                const screenHeight = window.screen.height;
+                const pixelRatio = window.devicePixelRatio;
+
+                console.log('设备检测:', {
+                    userAgent: ua,
+                    screenSize: `${screenWidth}×${screenHeight}`,
+                    pixelRatio: pixelRatio,
+                    isiPhone: isiPhone,
+                    isiOS: isiOS
+                });
+
+                // 判断是否为iPhone 14 Pro Max
+                const isiPhone14ProMax =
+                    isiPhone &&
+                    pixelRatio === 3 &&
+                    screenWidth === 430 &&
+                    screenHeight === 932;
+
+                if (isiPhone14ProMax) {
+                    console.log('检测到 iPhone 14 Pro Max');
+                    document.body.classList.add('iphone-14-pro-max');
+                }
+
+                return isiPhone14ProMax;
+            }
+
+            // 隐藏加载占位符
+            function hideLoading() {
+                const placeholder = document.getElementById('loadingPlaceholder');
+                if (placeholder) {
+                    placeholder.style.display = 'none';
+                }
+            }
+
+            // 图片加载完成处理
+            function imageLoaded(img) {
+                img.style.opacity = '1';
+            }
+
+            // 图片错误处理
+            function handleImageError(img) {
+                console.warn('图片加载失败:', img.src);
+                img.style.opacity = '0.5';
+                img.style.filter = 'grayscale(100%)';
+
+                // 如果是主背景图片，显示错误信息
+                if (img.classList.contains('embedded-image')) {
+                    img.alt = '图片加载失败，请检查网络连接';
+                }
+            }
+
+            // 1. 实时时间更新函数（优化性能）
+            function updateBeijingTime() {
+                const now = new Date();
+
+                // 获取北京时间（UTC+8）
+                const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+
+                // 格式化为 xxxx-xx-xx xx:xx:xx
+                const year = beijingTime.getUTCFullYear();
+                const month = String(beijingTime.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(beijingTime.getUTCDate()).padStart(2, '0');
+                const hours = String(beijingTime.getUTCHours()).padStart(2, '0');
+                const minutes = String(beijingTime.getUTCMinutes()).padStart(2, '0');
+                const seconds = String(beijingTime.getUTCSeconds()).padStart(2, '0');
+
+                // 显示时间
+                const currentTimeDisplay = document.getElementById('currentTime');
+                if (currentTimeDisplay) {
+                    currentTimeDisplay.textContent = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                }
+            }
+
+            // 2. 优化时间更新，减少不必要的重绘
+            let lastUpdateTime = 0;
+            function optimizedTimeUpdate() {
+                const now = Date.now();
+                if (now - lastUpdateTime >= 1000) {
+                    updateBeijingTime();
+                    lastUpdateTime = now;
+                }
+                requestAnimationFrame(optimizedTimeUpdate);
+            }
+
+            // 3. 防止移动端缩放和滚动
+            function preventZoomAndScroll() {
+                // 防止双击缩放
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function(event) {
+                    const now = Date.now();
+                    if (now - lastTouchEnd <= 300) {
+                        event.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, { passive: false });
+
+                // 防止手势缩放
+                document.addEventListener('gesturestart', function(e) {
+                    e.preventDefault();
+                });
+
+                // 禁用弹性滚动
+                document.body.style.overflow = 'hidden';
+            }
+
+            // 4. 处理方向变化
+            function handleOrientationChange() {
+                const isPortrait = window.innerHeight > window.innerWidth;
+                const body = document.body;
+
+                if (isPortrait) {
+                    body.classList.remove('landscape-mode');
+                    body.classList.add('portrait-mode');
+                    console.log('竖屏模式');
+                } else {
+                    body.classList.remove('portrait-mode');
+                    body.classList.add('landscape-mode');
+                    console.log('横屏模式');
+                }
+            }
+
+            // 5. 初始化所有功能
+            function init() {
+                // 检测设备
+                detectDevice();
+
+                // 隐藏加载状态
+                setTimeout(hideLoading, 1000);
+
+                // 初始化时间
+                updateBeijingTime();
+                optimizedTimeUpdate();
+
+                // 防止缩放和滚动
+                preventZoomAndScroll();
+
+                // 处理方向变化
+                handleOrientationChange();
+                window.addEventListener('resize', handleOrientationChange);
+                window.addEventListener('orientationchange', handleOrientationChange);
+
+                // 优化图片显示
+                const images = document.querySelectorAll('img');
+                images.forEach(img => {
+                    img.style.opacity = '0';
+                    img.style.transition = 'opacity 0.3s ease-in-out';
+
+                    // 如果图片已经加载完成
+                    if (img.complete) {
+                        imageLoaded(img);
+                    }
+                });
+
+                console.log('初始化完成，所有功能已启用');
+            }
+
+            // 页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // 页面卸载时清理
+            window.addEventListener('beforeunload', function() {
+                console.log('页面卸载中...');
+            });
+
+            // 错误处理
+            window.addEventListener('error', function(e) {
+                console.error('页面错误:', e.message, e.filename, e.lineno);
+            });
+        });
+    </script>
 </body>
 </html>
